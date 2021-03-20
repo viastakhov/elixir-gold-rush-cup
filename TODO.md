@@ -9,3 +9,4 @@
 - [ ] README.md
 - [ ] Dockerfile
 - [ ] Stub server as git submodule
+- [ ] Unit tests
