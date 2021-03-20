@@ -7,7 +7,7 @@ defmodule GoldRush.Licenser do
   require Logger
 
   def start_link(initial_value) do
-    Logger.info "[#{inspect self()}] Licenser agent starting ..."
+    Logger.info("Licenser agent starting ...")
     Agent.start_link(fn -> initial_value end, name: __MODULE__)
   end
 
@@ -22,7 +22,7 @@ defmodule GoldRush.Licenser do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
         {:ok, Poison.decode!(body, as: [%GoldRush.Schemas.License{}])}
       {event, %HTTPoison.Response{status_code: status_code, body: body}} ->
-        Logger.debug "[#{inspect self()}] Licenser agent << [:#{event}, #{status_code}]:\n#{body}"
+        Logger.warn("[:#{event}, #{status_code}]:\n#{body}")
         if attempt < @max_retries, do: do_get_licenses!(attempt + 1)
         {:error, status_code}
     end
@@ -47,7 +47,7 @@ defmodule GoldRush.Licenser do
         invalidate_licenses!()
         {:ok, license}
       {event, %HTTPoison.Response{status_code: status_code, body: body}} ->
-        Logger.debug "[#{inspect self()}] Licenser agent << [:#{event}, #{status_code}]:\n#{body}"
+        Logger.warn("[:#{event}, #{status_code}]:\n#{body}")
         if attempt < @max_retries and status_code != 409, do: do_issue_license!(wallet, attempt + 1)
         {:error, status_code}
     end

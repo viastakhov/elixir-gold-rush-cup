@@ -5,7 +5,7 @@ defmodule GoldRush.Application do
   require Logger
 
   def start(_type, _args) do
-    Logger.debug "[#{inspect self()}] Application starting ..."
+    Logger.info("Application starting ...")
 
     children = [
       :hackney_pool.child_spec(:generic_pool, [timeout: 150000, max_connections: 100]),

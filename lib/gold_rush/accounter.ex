@@ -7,7 +7,7 @@ defmodule GoldRush.Accounter do
   require Logger
 
   def start_link(initial_value) do
-    Logger.info "[#{inspect self()}] Accounter agent starting ..."
+    Logger.info("Accounter agent starting ...")
     Agent.start_link(fn -> initial_value end, name: __MODULE__)
   end
 
@@ -27,7 +27,7 @@ defmodule GoldRush.Accounter do
         balance = Poison.decode!(body, as: %GoldRush.Schemas.Balance{})
         Agent.update(__MODULE__, fn _ -> balance end)
       {event, %HTTPoison.Response{status_code: status_code, body: body}} ->
-        Logger.debug "[#{inspect self()}] Accounter agent << [:#{event}, #{status_code}]:\n#{body}"
+        Logger.warn("[:#{event}, #{status_code}]:\n#{body}")
         if attempt < @max_retries, do: do_invalidate_balance!(attempt + 1)
     end
   end
@@ -42,7 +42,7 @@ defmodule GoldRush.Accounter do
         Agent.update(__MODULE__, fn _ -> balance end)
         {:ok, balance}
       {event, %HTTPoison.Response{status_code: status_code, body: body}} ->
-        Logger.debug "[#{inspect self()}] Accounter agent << [:#{event}, #{status_code}]:\n#{body}"
+        Logger.warn("[:#{event}, #{status_code}]:\n#{body}")
         if attempt < @max_retries, do: do_exchange_cash!(treasure_id, attempt + 1)
         {:error, status_code}
     end
