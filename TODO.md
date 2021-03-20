@@ -1,0 +1,11 @@
+- [ ] Separate hackney pools
+- [ ] Manager GenServer
+- [ ] Explorer Worker
+- [ ] Digger Task/Worker
+- [ ] Concueuer
+- [ ] Improve *do_issue_license!()*
+- [ ] [Accept-Encoding](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Encoding)
+- [ ] [Code style](https://github.com/christopheradams/elixir_style_guide)
+- [ ] README.md
+- [ ] Dockerfile
+- [ ] Stub server as git submodule
