@@ -4,7 +4,12 @@ import Config
 config :gold_rush,
   scheme: "http",
   address: "localhost",
-  port: 8000
+  port: 8000,
+  field: %{width: 350, height: 350, depth: 10},
+  pools: %{
+    explorers: %{size: 2, max_overflow: 2},
+    diggers: %{size: 2, max_overflow: 2}
+  }
 
 # Logger general configuration
 config :logger,
@@ -16,5 +21,5 @@ config :logger,
 
 # Console Backend-specific configuration
 config :logger, :console,
-  format: "\n##### $time $metadata[$level] $levelpad$message\n",
-  metadata: [:module, :line, :pid]
+  format: "[$time] $metadata[$level] $levelpad$message\n",
+  metadata: [:pid, :mfa]

@@ -1,4 +1,4 @@
-- [ ] Separate hackney pools
+- [ ] Separate hackney pools, separate configs
 - [ ] Manager GenServer
 - [ ] Explorer Worker
 - [ ] Digger Task/Worker

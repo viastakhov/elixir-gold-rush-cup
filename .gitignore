@@ -23,5 +23,5 @@ erl_crash.dump
 elixir_gold_rush_cup-*.tar
 
 # Trace Tool Builder file
-ttb_*
+ttb_last_config
 

@@ -10,7 +10,8 @@ defmodule GoldRush.Application do
     children = [
       :hackney_pool.child_spec(:generic_pool, [timeout: 150000, max_connections: 100]),
       {GoldRush.Accounter, %GoldRush.Schemas.Balance{}},
-      {GoldRush.Licenser, []}
+      {GoldRush.Licenser, []},
+      GoldRush.Manager
     ]
 
     opts = [strategy: :one_for_one, name: GoldRush.Supervisor]

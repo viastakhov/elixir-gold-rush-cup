@@ -11,7 +11,7 @@ defmodule GoldRush.Accounter do
     Agent.start_link(fn -> initial_value end, name: __MODULE__)
   end
 
-  def get_ammount do
+  def get_amount do
     Agent.get(__MODULE__, & &1.balance)
   end
 
