@@ -41,6 +41,9 @@ defmodule GoldRush.Accounter do
   defp do_exchange_cash!(treasure_id, attempt) do
     case GoldRush.RestClient.cash(treasure_id) do
       {:ok, %HTTPoison.Response{status_code: 200}} -> {:ok, 200}
+      {:error, _} ->
+        :timer.sleep(1000)
+        do_exchange_cash!(treasure_id, attempt + 1)
       {event, %HTTPoison.Response{status_code: status_code, body: body}} ->
         if attempt < @max_retries do
           do_exchange_cash!(treasure_id, attempt + 1)

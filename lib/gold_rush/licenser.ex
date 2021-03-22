@@ -1,7 +1,9 @@
 defmodule GoldRush.Licenser do
   @moduledoc false
 
-  @max_licenses 10
+  @max_licenses Application.fetch_env!(:gold_rush, :licenses).max_licenses
+  @high_watermark Application.fetch_env!(:gold_rush, :licenses).high_watermark
+  @hight_limit_licenses @max_licenses - (@max_licenses - @high_watermark)
   @max_retries 10
 
   use Agent
@@ -32,7 +34,7 @@ defmodule GoldRush.Licenser do
   def get_license!(:free) do
     Agent.get_and_update(__MODULE__, fn licenses ->
       license_cnt = length(licenses)
-      if license_cnt < @max_licenses do
+      if license_cnt < @hight_limit_licenses do
         case issue_license!(:free) do
           {:ok, new_license} ->
             update_licenses(new_license, licenses)
@@ -41,18 +43,14 @@ defmodule GoldRush.Licenser do
               {:ok, lx} ->
                 update_licenses(Enum.random(lx), lx)
               {_, } ->
+                Logger.error("Getting licenses failue!")
                 {:error, licenses}
             end
         end
       else
-        case get_licenses!() do
-          {:ok, lx} ->
-            update_licenses(Enum.random(lx), lx)
-          {_, } ->
-            {:error, licenses}
-        end
+        update_licenses(Enum.random(licenses), licenses)
       end
-    end, 60_000)
+    end, :infinity)
   end
 
   def get_licenses do
@@ -96,10 +94,10 @@ defmodule GoldRush.Licenser do
         license = Poison.decode!(body, as: %GoldRush.Schemas.License{})
         {:ok, license}
       {event, %HTTPoison.Response{status_code: status_code, body: body}} ->
-        if attempt < @max_retries and status_code != 409 do
+        if attempt < @max_retries do
           do_issue_license!(wallet, attempt + 1)
         else
-          if status_code != 409, do: Logger.warn("[:#{event}, #{status_code}]:\n#{body}")
+          Logger.warn("[:#{event}, #{status_code}]:\n#{body}")
           {:error, status_code}
         end
     end

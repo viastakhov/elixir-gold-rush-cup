@@ -1,7 +1,7 @@
 defmodule GoldRush.Diggers.Worker do
   @moduledoc false
 
-  @max_retries 2
+  @max_retries 10
   @max_depth Application.fetch_env!(:gold_rush, :field).depth
 
   use Conqueuer.Worker
