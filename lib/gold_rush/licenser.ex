@@ -1,7 +1,8 @@
 defmodule GoldRush.Licenser do
   @moduledoc false
 
-  @max_retries 2
+  @max_licenses 10
+  @max_retries 10
 
   use Agent
   require Logger
@@ -9,6 +10,49 @@ defmodule GoldRush.Licenser do
   def start_link(initial_value) do
     Logger.info("Licenser agent starting ...")
     Agent.start_link(fn -> initial_value end, name: __MODULE__)
+  end
+
+  defp update_licenses(license, licenses_list) do
+    %GoldRush.Schemas.License{digAllowed: dig_allowed, digUsed: dig_used, id: id} = license
+    cond do
+      dig_used == 0 ->
+        filtered_license_list = Enum.filter(licenses_list, fn x -> x.id != id end)
+        new_license_list = [Map.update(license, :digUsed, 0, fn v -> v + 1 end) | filtered_license_list]
+        {{:ok, license}, new_license_list}
+      dig_allowed <= dig_used + 1 ->
+        new_license_list = Enum.filter(licenses_list, fn x -> x.id != id end)
+        {{:ok, license}, new_license_list}
+      dig_allowed > dig_used + 1 ->
+        filtered_license_list = Enum.filter(licenses_list, fn x -> x.id != id end)
+        new_license_list = [Map.update(license, :digUsed, 0, fn v -> v + 1 end) | filtered_license_list]
+        {{:ok, license}, new_license_list}
+    end
+  end
+
+  def get_license!(:free) do
+    Agent.get_and_update(__MODULE__, fn licenses ->
+      license_cnt = length(licenses)
+      if license_cnt < @max_licenses do
+        case issue_license!(:free) do
+          {:ok, new_license} ->
+            update_licenses(new_license, licenses)
+          {_, _} ->
+            case get_licenses!() do
+              {:ok, lx} ->
+                update_licenses(Enum.random(lx), lx)
+              {_, } ->
+                {:error, licenses}
+            end
+        end
+      else
+        case get_licenses!() do
+          {:ok, lx} ->
+            update_licenses(Enum.random(lx), lx)
+          {_, } ->
+            {:error, licenses}
+        end
+      end
+    end, 60_000)
   end
 
   def get_licenses do
@@ -21,10 +65,16 @@ defmodule GoldRush.Licenser do
     case GoldRush.RestClient.licenses() do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
         {:ok, Poison.decode!(body, as: [%GoldRush.Schemas.License{}])}
+      {:error, _} ->
+        :timer.sleep(1000)
+        do_get_licenses!(attempt + 1)
       {event, %HTTPoison.Response{status_code: status_code, body: body}} ->
-        Logger.warn("[:#{event}, #{status_code}]:\n#{body}")
-        if attempt < @max_retries, do: do_get_licenses!(attempt + 1)
-        {:error, status_code}
+        if attempt < @max_retries do
+          do_get_licenses!(attempt + 1)
+        else
+          Logger.warn("[:#{event}, #{status_code}]:\n#{body}")
+          {:error, status_code}
+        end
     end
   end
 
@@ -44,12 +94,14 @@ defmodule GoldRush.Licenser do
     case GoldRush.RestClient.licenses(wallet) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
         license = Poison.decode!(body, as: %GoldRush.Schemas.License{})
-        invalidate_licenses!()
         {:ok, license}
       {event, %HTTPoison.Response{status_code: status_code, body: body}} ->
-        Logger.warn("[:#{event}, #{status_code}]:\n#{body}")
-        if attempt < @max_retries and status_code != 409, do: do_issue_license!(wallet, attempt + 1)
-        {:error, status_code}
+        if attempt < @max_retries and status_code != 409 do
+          do_issue_license!(wallet, attempt + 1)
+        else
+          if status_code != 409, do: Logger.warn("[:#{event}, #{status_code}]:\n#{body}")
+          {:error, status_code}
+        end
     end
   end
 end

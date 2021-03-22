@@ -12,30 +12,40 @@ defmodule GoldRush.Manager do
     GenServer.start_link(__MODULE__, nil, name: __MODULE__)
   end
 
-  # def push(pid, element) do
-  #   GenServer.cast(pid, {:push, element})
-  # end
+  def get_license() do
+    # The simplest license issue algorithm
+    GoldRush.Licenser.get_license!(:free)
+  end
 
-  # def pop(pid) do
-  #   GenServer.call(pid, :pop)
-  # end
+  def exchange_treasures(treasure_list) do
+    #
+    Enum.each(treasure_list, fn treasure ->
+      Task.start(fn ->
+        GoldRush.Accounter.exchange_cash!(treasure)
+      end)
+    end)
+    #
+  end
 
   # Server (callbacks)
 
   @impl true
   def init(_) do
+    wait_api_server()
     run_explorers()
     {:ok, nil}
   end
 
-  @impl true
-  def handle_call(:pop, _from, [head | tail]) do
-    {:reply, head, tail}
-  end
-
-  @impl true
-  def handle_cast({:push, element}, state) do
-    {:noreply, [element | state]}
+  defp wait_api_server() do
+    case GoldRush.RestClient.health_check() do
+      {:ok, _} ->
+        Logger.info("REST API Server LIVE!")
+        {:ok, :online}
+      {_, _} ->
+        Logger.debug("REST API Server OFFLINE!")
+        :timer.sleep(500)
+        wait_api_server()
+    end
   end
 
   defp run_explorers do

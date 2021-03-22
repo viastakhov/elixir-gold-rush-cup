@@ -8,7 +8,11 @@ defmodule GoldRush.Application do
     Logger.info("Application starting ...")
 
     children = [
-      :hackney_pool.child_spec(:generic_pool, [timeout: 150000, max_connections: 100]),
+      :hackney_pool.child_spec(:generic_pool, [timeout: 150000, max_connections: 10]),
+      :hackney_pool.child_spec(:licenser_pool, [timeout: 150000, max_connections: 10]),
+      :hackney_pool.child_spec(:accounter_pool, [timeout: 150000, max_connections: 10]),
+      :hackney_pool.child_spec(:explorers_pool, [timeout: 150000, max_connections: 1000]),
+      :hackney_pool.child_spec(:diggers_pool, [timeout: 150000, max_connections: 100]),
       {GoldRush.Accounter, %GoldRush.Schemas.Balance{}},
       {GoldRush.Licenser, []},
       GoldRush.Manager

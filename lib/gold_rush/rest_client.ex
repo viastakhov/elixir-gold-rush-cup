@@ -30,7 +30,7 @@ defmodule GoldRush.RestClient do
         {"Accept", "application/json"},
         {"Content-Type", "application/json"}
       ],
-      options: [timeout: 50_000, recv_timeout: 50_000, hackney: [pool: :generic_pool]]
+      options: [timeout: 50_000, recv_timeout: 50_000, hackney: [pool: :accounter_pool]]
     }
     |> HTTPoison.request
   end
@@ -44,7 +44,7 @@ defmodule GoldRush.RestClient do
         {"Accept", "application/json"},
         {"Content-Type", "application/json"}
       ],
-      options: [timeout: 50_000, recv_timeout: 50_000, hackney: [pool: :generic_pool]]
+      options: [timeout: 50_000, recv_timeout: 50_000, hackney: [pool: :diggers_pool]]
     }
     |> HTTPoison.request
   end
@@ -58,7 +58,7 @@ defmodule GoldRush.RestClient do
         {"Accept", "application/json"},
         {"Content-Type", "application/json"}
       ],
-      options: [timeout: 50_000, recv_timeout: 50_000, hackney: [pool: :generic_pool]]
+      options: [timeout: 50_000, recv_timeout: 50_000, hackney: [pool: :explorers_pool]]
     }
     |> HTTPoison.request
   end
@@ -82,7 +82,7 @@ defmodule GoldRush.RestClient do
       headers: [
         {"Accept", "application/json"}
       ],
-      options: [timeout: 50_000, recv_timeout: 50_000, hackney: [pool: :generic_pool]]
+      options: [timeout: 50_000, recv_timeout: 50_000, hackney: [pool: :licenser_pool]]
     }
     |> HTTPoison.request
   end
@@ -96,7 +96,7 @@ defmodule GoldRush.RestClient do
         {"Accept", "application/json"},
         {"Content-Type", "application/json"}
       ],
-      options: [timeout: 50_000, recv_timeout: 50_000, hackney: [pool: :generic_pool]]
+      options: [timeout: 50_000, recv_timeout: 50_000, hackney: [pool: :licenser_pool]]
     }
     |> HTTPoison.request
   end
