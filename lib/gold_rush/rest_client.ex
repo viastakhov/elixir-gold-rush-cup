@@ -1,18 +1,18 @@
 defmodule GoldRush.RestClient do
   @moduledoc false
 
-  @scheme Application.fetch_env!(:gold_rush, :scheme)
-  @address Application.fetch_env!(:gold_rush, :address)
-  @port Application.fetch_env!(:gold_rush, :port)
-  @base_url "#{@scheme}://#{@address}:#{@port}"
-
   # Handy way to get detailed request logging
   # :hackney_trace.enable(:max, :io)
+
+  defp scheme, do: Application.fetch_env!(:gold_rush, :scheme)
+  defp address, do: Application.fetch_env!(:gold_rush, :address)
+  defp port, do: Application.fetch_env!(:gold_rush, :port)
+  defp base_url, do: "#{scheme()}://#{address()}:#{port()}"
 
   def balance() do
     %HTTPoison.Request{
       method: :get,
-      url: @base_url <> "/balance",
+      url: base_url() <> "/balance",
       headers: [
         {"Accept", "application/json"}
       ],
@@ -24,7 +24,7 @@ defmodule GoldRush.RestClient do
   def cash(treasure) do
     %HTTPoison.Request{
       method: :post,
-      url: @base_url <> "/cash",
+      url: base_url() <> "/cash",
       body: Poison.encode!(treasure),
       headers: [
         {"Accept", "application/json"},
@@ -38,7 +38,7 @@ defmodule GoldRush.RestClient do
   def dig(dig = %GoldRush.Schemas.Dig{}) do
     %HTTPoison.Request{
       method: :post,
-      url: @base_url <> "/dig",
+      url: base_url() <> "/dig",
       body: Poison.encode!(dig),
       headers: [
         {"Accept", "application/json"},
@@ -52,7 +52,7 @@ defmodule GoldRush.RestClient do
   def explore(area = %GoldRush.Schemas.Area{}) do
     %HTTPoison.Request{
       method: :post,
-      url: @base_url <> "/explore",
+      url: base_url() <> "/explore",
       body: Poison.encode!(area),
       headers: [
         {"Accept", "application/json"},
@@ -66,7 +66,7 @@ defmodule GoldRush.RestClient do
   def health_check() do
     %HTTPoison.Request{
       method: :get,
-      url: @base_url <> "/health-check",
+      url: base_url() <> "/health-check",
       headers: [
         {"Accept", "application/json"}
       ],
@@ -78,7 +78,7 @@ defmodule GoldRush.RestClient do
   def licenses() do
     %HTTPoison.Request{
       method: :get,
-      url: @base_url <> "/licenses",
+      url: base_url() <> "/licenses",
       headers: [
         {"Accept", "application/json"}
       ],
@@ -90,7 +90,7 @@ defmodule GoldRush.RestClient do
   def licenses(wallet) do
     %HTTPoison.Request{
       method: :post,
-      url: @base_url <> "/licenses",
+      url: base_url() <> "/licenses",
       body: Poison.encode!(wallet),
       headers: [
         {"Accept", "application/json"},

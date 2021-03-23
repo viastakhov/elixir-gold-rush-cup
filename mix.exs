@@ -6,20 +6,19 @@ defmodule GoldRush.MixProject do
       app: :gold_rush,
       version: "0.1.0",
       elixir: "~> 1.10",
+      #build_embedded: Mix.env == :prod,
       start_permanent: Mix.env() == :prod,
       deps: deps()
     ]
   end
 
-  # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger],
+      extra_applications: [:logger, :conqueuer, :inflex, :poolboy],
       mod: {GoldRush.Application, []}
     ]
   end
 
-  # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
       {:poison, "~> 3.1"},

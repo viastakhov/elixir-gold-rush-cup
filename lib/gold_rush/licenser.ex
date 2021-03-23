@@ -1,10 +1,10 @@
 defmodule GoldRush.Licenser do
   @moduledoc false
 
+  @max_retries 10
   @max_licenses Application.fetch_env!(:gold_rush, :licenses).max_licenses
   @high_watermark Application.fetch_env!(:gold_rush, :licenses).high_watermark
   @hight_limit_licenses @max_licenses - (@max_licenses - @high_watermark)
-  @max_retries 10
 
   use Agent
   require Logger

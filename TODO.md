@@ -5,7 +5,7 @@
 - [X] Concueuer
 - [X] Improve *do_issue_license!()*
 - [ ] [Accept-Encoding](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Encoding)
-- [ ] README.md
-- [ ] Dockerfile
+- [X] README.md
+- [X] Dockerfile
 - [ ] Stub server as git submodule
 - [ ] Unit tests

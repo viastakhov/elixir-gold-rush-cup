@@ -5,7 +5,14 @@ defmodule GoldRush.Application do
   require Logger
 
   def start(_type, _args) do
-    Logger.info("Application starting ...")
+    Logger.info("Application starting ...\n")
+    Logger.info("Options:")
+    Logger.info(" Scheme: #{get_param_as_string :scheme}")
+    Logger.info(" Address: #{get_param_as_string :address}")
+    Logger.info(" Port: #{get_param_as_string :port}")
+    Logger.info(" Field: #{get_param_as_string :field}")
+    Logger.info(" Licenses: #{get_param_as_string :licenses}")
+    Logger.info(" Pools: #{get_param_as_string :pools}\n")
 
     children = [
       :hackney_pool.child_spec(:generic_pool, [
@@ -35,5 +42,9 @@ defmodule GoldRush.Application do
 
     opts = [strategy: :one_for_one, name: GoldRush.Supervisor]
     Supervisor.start_link(children, opts)
+  end
+
+  defp get_param_as_string(key) do
+    Application.fetch_env!(:gold_rush, key) |> inspect() |> String.replace("%", "")
   end
 end
