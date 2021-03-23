@@ -9,10 +9,6 @@ FROM elixir:1.11.4-alpine as build
 ARG app_name=gold_rush
 ENV APP_NAME=${app_name}
 
-# Set application version
-ARG app_version=0.1.0
-ENV APP_VERSION=${app_version}
-
 # Install hex & rebar
 RUN mix local.hex --force && \
     mix local.rebar --force

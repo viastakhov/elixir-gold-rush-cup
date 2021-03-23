@@ -29,13 +29,33 @@ Change release config *./config/release.exs*
 
 ## Run
 ### Dev environment
-```shell
-mix run --no-halt
-```
+* Run the application without *iex* shell
+  ```shell
+  mix run --no-halt
+  ```
+* Run the application with *iex* shell
+  ```shell
+  iex -S mix
+  ```  
 ### Prod environment
-```shell
-docker run --rm -it -e ADDRESS=localhost --net=host -t gold_rush:0.1.0
-```
+* Test a container locally
+  ```shell
+  docker run --rm -it -e ADDRESS=localhost --net=host -t gold_rush:0.1.0
+  ```
+* Run a container on remote server
+  * Login to docker registry
+    ```shell
+    docker login stor.highloadcup.ru
+    ```
+  * Tag built image using provided tag
+    ```shell
+    docker tag <your image> stor.highloadcup.ru/rally/<provided tag>
+    ```
+  * Publish built image
+    ```shell
+    docker push stor.highloadcup.ru/rally/<provided tag>
+    ```
+  * Check you solution on [Gold Rush](https://cups.mail.ru/ru/tasks/1057) dashboard
 
 ## License
 Copyright © 2021 Vladimir Astakhov [viastakhov@mail.ru]
