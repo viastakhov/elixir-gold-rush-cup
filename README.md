@@ -24,7 +24,7 @@ Change release config *./config/release.exs*
 ### Prod environment
 * Build docker image
   ```shell
-  docker build --no-cache -t gold_rush:0.1.0 .
+  docker build --no-cache -t gold_rush:<version> .
   ```
 
 ## Run
@@ -40,7 +40,7 @@ Change release config *./config/release.exs*
 ### Prod environment
 * Test a container locally
   ```shell
-  docker run --rm -it -e ADDRESS=localhost --net=host -t gold_rush:0.1.0
+  docker run --rm -it -e ADDRESS=localhost --net=host -t gold_rush:<version>
   ```
 * Run a container on remote server
   * Login to docker registry

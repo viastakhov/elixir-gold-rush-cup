@@ -7,7 +7,7 @@ defmodule GoldRush.Explorers.Worker do
   require Logger
 
   def perform({pos_x, pos_y}, _state) do
-    # Logger.debug("Explorer worker starting [#{pos_x}, #{pos_y}] ...")
+    Logger.debug("Explorer worker starting [#{pos_x}, #{pos_y}] ...")
     case explore(pos_x, pos_y) do
       {:ok, %GoldRush.Schemas.Report{amount: amount}} ->
         if amount > 0 do
@@ -17,7 +17,7 @@ defmodule GoldRush.Explorers.Worker do
         end
       {_, _} -> :error
     end
-    # Logger.debug("Explorer worker [#{pos_x}, #{pos_y}] done.")
+    Logger.debug("Explorer worker [#{pos_x}, #{pos_y}] done.")
   end
 
   defp explore(pos_x, pos_y, size_x \\ 1, size_y \\ 1), do: do_explore(pos_x, pos_y, size_x, size_y, 0)

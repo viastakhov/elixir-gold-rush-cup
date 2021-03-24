@@ -16,7 +16,7 @@ defmodule GoldRush.RestClient do
       headers: [
         {"Accept", "application/json"}
       ],
-      options: [timeout: 50_000, recv_timeout: 50_000, hackney: [pool: :generic_pool]]
+      options: [timeout: 50_000, recv_timeout: 50_000, hackney: [pool: :accounter_pool]]
     }
     |> HTTPoison.request
   end

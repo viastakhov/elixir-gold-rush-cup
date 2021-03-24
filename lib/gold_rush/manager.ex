@@ -2,8 +2,9 @@ defmodule GoldRush.Manager do
   use GenServer
   require Logger
 
-  @height Application.fetch_env!(:gold_rush, :field).width
-  @width Application.fetch_env!(:gold_rush, :field).height
+  @height Application.fetch_env!(:gold_rush, :field).height
+  @width Application.fetch_env!(:gold_rush, :field).width
+  @interest_margin Application.fetch_env!(:gold_rush, :licenses).interest_margin
 
   # Client
 
@@ -14,7 +15,16 @@ defmodule GoldRush.Manager do
 
   def get_license() do
     # The simplest license issue algorithm
-    GoldRush.Licenser.get_license!(:free)
+    # GoldRush.Licenser.get_license!(:free)
+
+    # More difficult license issue algorithm
+    total_amount = GoldRush.Accounter.get_amount()
+    if (total_amount > 100) do
+      coins_amnt = :rand.uniform(div total_amount * @interest_margin, 100)
+      GoldRush.Licenser.get_license!(:paid, coins_amnt)
+    else
+      GoldRush.Licenser.get_license!(:free)
+    end
   end
 
   def exchange_treasures(treasure_list) do
@@ -57,6 +67,8 @@ defmodule GoldRush.Manager do
 
     diggers_opts = [strategy: :one_for_one, name: GoldRush.Manager.Diggers.Supervisor]
     Supervisor.start_link(diggers_children, diggers_opts)
+
+    Logger.info("Exploring the field [#{@width} x #{@height}] ...")
 
     Enum.each(0..@width - 1, fn x ->
       Enum.each(0..@height - 1, fn y ->

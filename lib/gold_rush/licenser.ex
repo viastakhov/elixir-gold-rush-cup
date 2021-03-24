@@ -31,15 +31,22 @@ defmodule GoldRush.Licenser do
     end
   end
 
-  def get_license!(:free) do
+  def get_license!(:free), do: do_get_license!(0)
+  def get_license!(:paid, coins_count), do: do_get_license!(coins_count)
+
+  def do_get_license!(coins_count) do
     Agent.get_and_update(__MODULE__, fn licenses ->
       license_cnt = length(licenses)
+
       if license_cnt < @hight_limit_licenses do
-        case issue_license!(:free) do
+        wallet = get_wallet(coins_count)
+        case do_issue_license!(wallet, 0) do
           {:ok, new_license} ->
             update_licenses(new_license, licenses)
           {_, _} ->
             case get_licenses!() do
+              {:ok, []} ->
+                do_get_license!([])
               {:ok, lx} ->
                 update_licenses(Enum.random(lx), lx)
               {_, } ->
@@ -51,6 +58,23 @@ defmodule GoldRush.Licenser do
         update_licenses(Enum.random(licenses), licenses)
       end
     end, :infinity)
+  end
+
+  defp get_wallet(coins_count) do
+    if coins_count > 0 do
+      old_total_amount = GoldRush.Accounter.get_amount()
+      GoldRush.Accounter.invalidate_balance!()
+      new_total_amount = GoldRush.Accounter.get_amount()
+      margin_amount = new_total_amount - old_total_amount
+
+      if margin_amount > coins_count do
+        Enum.take(GoldRush.Accounter.get_wallet, coins_count)
+      else
+        Enum.take(GoldRush.Accounter.get_wallet, abs(margin_amount))
+      end
+    else
+      []
+    end
   end
 
   def get_licenses do

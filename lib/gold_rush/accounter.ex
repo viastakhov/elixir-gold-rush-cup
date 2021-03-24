@@ -1,13 +1,14 @@
 defmodule GoldRush.Accounter do
   @moduledoc false
 
-  @max_retries 10
+  @max_retries 100
 
   use Agent
   require Logger
 
   def start_link(initial_value) do
     Logger.info("Accounter agent starting ...")
+    Task.start(__MODULE__, :balance_monitor, [])
     Agent.start_link(fn -> initial_value end, name: __MODULE__)
   end
 
@@ -26,6 +27,9 @@ defmodule GoldRush.Accounter do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
         balance = Poison.decode!(body, as: %GoldRush.Schemas.Balance{})
         Agent.update(__MODULE__, fn _ -> balance end)
+      {:error, _} ->
+        :timer.sleep(1000)
+        do_invalidate_balance!(attempt + 1)
       {event, %HTTPoison.Response{status_code: status_code, body: body}} ->
         if attempt < @max_retries do
           do_invalidate_balance!(attempt + 1)
@@ -52,5 +56,13 @@ defmodule GoldRush.Accounter do
           {:error, status_code}
         end
     end
+  end
+
+  def balance_monitor() do
+    :timer.sleep(5_000)
+    invalidate_balance!()
+    Logger.info("Current balance: #{get_amount()}")
+    :timer.sleep(5_000)
+    balance_monitor()
   end
 end

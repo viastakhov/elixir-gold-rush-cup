@@ -5,10 +5,6 @@
 # Base build image
 FROM elixir:1.11.4-alpine as build
 
-# Set application name
-ARG app_name=gold_rush
-ENV APP_NAME=${app_name}
-
 # Install hex & rebar
 RUN mix local.hex --force && \
     mix local.rebar --force
@@ -44,7 +40,7 @@ LABEL maintainer="viastakhov@mail.ru"
 
 # Environment vars
 ENV REPLACE_OS_VARS=true
-#ENV ELIXIR_ERL_OPTS="+P 5000000"
+ENV ELIXIR_ERL_OPTS="+P 5000000"
 
 # Install libs
 RUN set -x \

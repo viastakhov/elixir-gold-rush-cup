@@ -1,0 +1,11 @@
+_build
+.elixir_ls
+deps
+test
+.formatter.exs
+.gitignore
+erl_crash.dump
+LICENSE
+README.md
+TODO.md
+ttb_last_config
