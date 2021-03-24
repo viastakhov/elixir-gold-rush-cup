@@ -62,16 +62,7 @@ defmodule GoldRush.Licenser do
 
   defp get_wallet(coins_count) do
     if coins_count > 0 do
-      old_total_amount = GoldRush.Accounter.get_amount()
-      GoldRush.Accounter.invalidate_balance!()
-      new_total_amount = GoldRush.Accounter.get_amount()
-      margin_amount = new_total_amount - old_total_amount
-
-      if margin_amount > coins_count do
-        Enum.take(GoldRush.Accounter.get_wallet, coins_count)
-      else
-        Enum.take(GoldRush.Accounter.get_wallet, abs(margin_amount))
-      end
+      GoldRush.Accounter.issue_coins(coins_count)
     else
       []
     end
@@ -117,6 +108,9 @@ defmodule GoldRush.Licenser do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
         license = Poison.decode!(body, as: %GoldRush.Schemas.License{})
         {:ok, license}
+      {:error, _} ->
+        :timer.sleep(1000)
+        do_get_licenses!(attempt + 1)
       {event, %HTTPoison.Response{status_code: status_code, body: body}} ->
         if attempt < @max_retries do
           do_issue_license!(wallet, attempt + 1)

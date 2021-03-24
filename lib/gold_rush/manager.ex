@@ -70,8 +70,11 @@ defmodule GoldRush.Manager do
 
     Logger.info("Exploring the field [#{@width} x #{@height}] ...")
 
-    Enum.each(0..@width - 1, fn x ->
-      Enum.each(0..@height - 1, fn y ->
+    xs = Enum.shuffle(0..@width - 1)
+    ys = Enum.shuffle(0..@height - 1)
+
+    Enum.each(xs, fn x ->
+      Enum.each(ys, fn y ->
         Conqueuer.work(:explorers, {x, y})
       end)
     end)

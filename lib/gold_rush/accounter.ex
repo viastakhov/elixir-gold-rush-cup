@@ -44,7 +44,18 @@ defmodule GoldRush.Accounter do
 
   defp do_exchange_cash!(treasure_id, attempt) do
     case GoldRush.RestClient.cash(treasure_id) do
-      {:ok, %HTTPoison.Response{status_code: 200}} -> {:ok, 200}
+      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
+        wallet = Poison.decode!(body)
+        Agent.update(__MODULE__, fn old_balance ->
+          wallet_amount = length(wallet)
+          new_balance_balance = wallet_amount + old_balance.balance
+          new_balance_wallet = wallet ++ old_balance.wallet
+          %GoldRush.Schemas.Balance{
+            balance: new_balance_balance,
+            wallet: new_balance_wallet
+          }
+        end)
+        {:ok, 200}
       {:error, _} ->
         :timer.sleep(1000)
         do_exchange_cash!(treasure_id, attempt + 1)
@@ -58,11 +69,23 @@ defmodule GoldRush.Accounter do
     end
   end
 
+  def issue_coins(coins_count) do
+    Agent.get_and_update(__MODULE__, fn old_balance ->
+      new_balance_balance = old_balance.balance - coins_count
+      issued_coins = Enum.take(old_balance.wallet, coins_count)
+      new_balance_wallet = old_balance.wallet -- issued_coins
+      new_balance = %GoldRush.Schemas.Balance{
+        balance: new_balance_balance,
+        wallet: new_balance_wallet
+      }
+      {issued_coins, new_balance}
+    end, :infinity)
+  end
+
   def balance_monitor() do
-    :timer.sleep(5_000)
-    invalidate_balance!()
+    :timer.sleep(1_000)
     Logger.info("Current balance: #{get_amount()}")
-    :timer.sleep(5_000)
+    :timer.sleep(1_000)
     balance_monitor()
   end
 end
