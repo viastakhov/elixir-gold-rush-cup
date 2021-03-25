@@ -6,15 +6,15 @@ config :gold_rush,
   address: "localhost",
   port: 8000,
   field: %{width: 3500, height: 3500, depth: 10},
-  licenses: %{max_licenses: 10, high_watermark: 9, interest_margin: 1},
+  licenses: %{max_licenses: 10, high_watermark: 9, interest_margin: 1, wallet_threshold: 25},
   pools: %{
-    explorers: %{size: 50, max_overflow: 0},
-    diggers: %{size: 10, max_overflow: 40},
+    explorers: %{size: 100, max_overflow: 0},
+    diggers: %{size: 10, max_overflow: 90},
     hackney: %{
       generic: %{timeout: 150000, max_connections: 10},
       licenser: %{timeout: 150000, max_connections: 100},
       accounter: %{timeout: 150000, max_connections: 100},
-      explorers: %{timeout: 150000, max_connections: 100},
+      explorers: %{timeout: 150000, max_connections: 1000},
       diggers: %{timeout: 150000, max_connections: 100}
     }
   }

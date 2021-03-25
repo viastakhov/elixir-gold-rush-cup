@@ -20,7 +20,7 @@ defmodule GoldRush.Manager do
     # More difficult license issue algorithm
     total_amount = GoldRush.Accounter.get_amount()
     if (total_amount > 100) do
-      coins_amnt = :rand.uniform(div total_amount * @interest_margin, 100)
+      coins_amnt = div(total_amount * @interest_margin, 100)
       GoldRush.Licenser.get_license!(:paid, coins_amnt)
     else
       GoldRush.Licenser.get_license!(:free)
@@ -70,11 +70,8 @@ defmodule GoldRush.Manager do
 
     Logger.info("Exploring the field [#{@width} x #{@height}] ...")
 
-    xs = Enum.shuffle(0..@width - 1)
-    ys = Enum.shuffle(0..@height - 1)
-
-    Enum.each(xs, fn x ->
-      Enum.each(ys, fn y ->
+    Enum.each(0..@width - 1, fn x ->
+      Enum.each(0..@height - 1, fn y ->
         Conqueuer.work(:explorers, {x, y})
       end)
     end)

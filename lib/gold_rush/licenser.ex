@@ -5,6 +5,7 @@ defmodule GoldRush.Licenser do
   @max_licenses Application.fetch_env!(:gold_rush, :licenses).max_licenses
   @high_watermark Application.fetch_env!(:gold_rush, :licenses).high_watermark
   @hight_limit_licenses @max_licenses - (@max_licenses - @high_watermark)
+  @wallet_threshold Application.fetch_env!(:gold_rush, :licenses).wallet_threshold
 
   use Agent
   require Logger
@@ -61,10 +62,10 @@ defmodule GoldRush.Licenser do
   end
 
   defp get_wallet(coins_count) do
-    if coins_count > 0 do
-      GoldRush.Accounter.issue_coins(coins_count)
-    else
-      []
+    cond do
+      coins_count <= 0 -> []
+      coins_count <= @wallet_threshold -> GoldRush.Accounter.issue_coins(coins_count)
+      coins_count > @wallet_threshold -> GoldRush.Accounter.issue_coins(@wallet_threshold)
     end
   end
 

@@ -82,10 +82,9 @@ defmodule GoldRush.Accounter do
     end, :infinity)
   end
 
-  def balance_monitor() do
-    :timer.sleep(1_000)
+  def balance_monitor do
+    :timer.sleep(10_000)
     Logger.info("Current balance: #{get_amount()}")
-    :timer.sleep(1_000)
     balance_monitor()
   end
 end
