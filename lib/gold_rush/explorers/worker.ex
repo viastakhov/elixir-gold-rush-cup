@@ -20,7 +20,7 @@ defmodule GoldRush.Explorers.Worker do
     Logger.debug("Explorer worker [#{pos_x}, #{pos_y}] done.")
   end
 
-  defp explore(pos_x, pos_y, size_x \\ 1, size_y \\ 1), do: do_explore(pos_x, pos_y, size_x, size_y, 0)
+  def explore(pos_x, pos_y, size_x \\ 1, size_y \\ 1), do: do_explore(pos_x, pos_y, size_x, size_y, 0)
 
   defp do_explore(pos_x, pos_y, size_x, size_y, attempt) do
     area = %GoldRush.Schemas.Area{posX: pos_x, posY: pos_y, sizeX: size_x, sizeY: size_y}

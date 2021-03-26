@@ -52,7 +52,7 @@ defmodule GoldRush.Manager do
         Logger.info("REST API Server LIVE!")
         {:ok, :online}
       {_, _} ->
-        Logger.debug("REST API Server OFFLINE!")
+        Logger.info("REST API Server OFFLINE!")
         :timer.sleep(500)
         wait_api_server()
     end
