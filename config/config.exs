@@ -6,7 +6,7 @@ config :gold_rush,
   address: "localhost",
   port: 8000,
   field: %{width: 3500, height: 3500, depth: 10},
-  licenses: %{max_licenses: 10, high_watermark: 9, interest_margin: 1, wallet_threshold: 25},
+  licenses: %{max_licenses: 10, high_watermark: 2, interest_margin: 1, wallet_threshold: 21},
   pools: %{
     explorers: %{size: 50, max_overflow: 0},
     diggers: %{size: 10, max_overflow: 40},

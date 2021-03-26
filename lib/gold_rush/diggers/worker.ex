@@ -16,21 +16,21 @@ defmodule GoldRush.Diggers.Worker do
   end
 
   defp dig({_, _, left, _}) when left <= 0, do: :ok
-  defp dig({_, _, _, depth}) when depth >= @max_depth, do: :ok
+  defp dig({_, _, _, depth}) when depth > @max_depth, do: :ok
 
   defp dig({pos_x, pos_y, left, depth}) do
     case GoldRush.Manager.get_license() do
       {:ok, %GoldRush.Schemas.License{id: license_id}} ->
         case do_dig({license_id, pos_x, pos_y, depth}) do
-          {:ok, 404} ->
+          {:ok, 404} ->  # Not found treasures
             dig({pos_x, pos_y, left, depth + 1})
-          {:ok, 422} ->
-            dig({pos_x, pos_y, left, depth + 1})
-          {:ok, treasure_list} ->
+          {:ok, {200, treasure_list}} ->
             #
             Task.start(fn -> GoldRush.Manager.exchange_treasures(treasure_list) end)
             #
             dig({pos_x, pos_y, left - 1, depth + 1})
+          {:ok, 422} ->
+            {:error, "wrong depth or coordinates"}
           {_, _} -> {:error, "dig failure"}
         end
       {_, _} -> {:error, "license failure"}
@@ -44,7 +44,7 @@ defmodule GoldRush.Diggers.Worker do
     case GoldRush.RestClient.dig(dig_struct) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
         treasure_list = Poison.decode!(body)
-        {:ok, treasure_list}
+        {:ok, {200, treasure_list}}
       {:ok, %HTTPoison.Response{status_code: 404}} ->
         {:ok, 404}
       {:ok, %HTTPoison.Response{status_code: 422}} ->
