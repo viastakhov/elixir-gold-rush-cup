@@ -58,6 +58,4 @@ Change release config *./config/release.exs*
   * Check you solution on [Gold Rush](https://cups.mail.ru/ru/tasks/1057) dashboard
 
 ## License
-Copyright © 2021 Vladimir Astakhov [viastakhov@mail.ru]
-
 Distributed under the Eclipse Public License 1.0.
